@@ -7,7 +7,7 @@
 #include <string.h>
 
 //Numero de reinas
-#define N 6
+#define N 8
 //Pixeles de la Celda
 #define CELDA 40
 
@@ -18,7 +18,7 @@ int esValida(int **, int, int);
 void generarMatriz(int **, int **);
 void generarImagen(int **, int *);
 void imprimirTablero(int**, int*);
-void ingresarSubcomp(int **, int, int, int, int, int, int);
+void ingresarSubMatriz(int **, int, int, int, int, int, int);
 int muerte(int *);
 void nReinas(int**, int, int, int, int*, int*);
 int reinaAnterior(int**, int);
@@ -63,16 +63,14 @@ int main(int argc, char *argv[]){
     imagen = (char*) malloc(TAM*TAM*3 *sizeof(char));
     acciones = (int*)malloc(N*sizeof(int));
     for(i = 0; i < N; i++){
-        tablero[i] = (int*)malloc(N*sizeof(int));
         acciones[i] = 0;
     }
-
     //Llamado del algoritmo
     nReinas(tablero, 0, 0, 0, acciones, c);
-
+    
     //Desplegado de número de configuraciones
     printf("Total: %d\n",configuraciones);
-
+    system("pause");
     free(tablero);
     free(acciones);
     free(matrizImagen);
@@ -82,14 +80,20 @@ int main(int argc, char *argv[]){
 
 void apartarMemoria(int ***matriz, int tam1, int tam2){
     int **arr = NULL;
-    int i = 0;
+    int i = 0, j = 0;
 
     arr = (int**) malloc(tam1 * sizeof(int*));
-
-    for (i = 0; i < TAM; i++){
+    
+    for (i = 0; i < tam2; i++){
         *(arr + i) = (int*) malloc(tam2 * sizeof(int));
     }
-    
+
+    for (i = 0; i < tam1; i++){
+        for (j = 0; j < tam2; j++){
+            arr[i][j] = 0;
+        }
+    }
+
     if (arr == NULL)
       return;
     
@@ -137,7 +141,6 @@ void escribirImagen(char *filename, char *rgb) {
 int esValida(int **tablero, int fila, int columna){
 //Va buscando en columnas izquierdas
     int i = columna-1, d1 = fila-1, d2 = fila+1;
-
     while(i >= 0){
         if(tablero[fila][i])
             return 0;
@@ -172,12 +175,12 @@ void generarMatriz(int **matriz, int **tablero){
             //Cambiar los valores entre (1,0) y (3,2) para un cambio
             //de color del tablero, negro-blanco, personalizado
             if(cc % 2 == 0)
-                ingresarSubcomp(matriz, 3, x, y, CELDA, CELDA, cc);
+                ingresarSubMatriz(matriz, 1, x, y, CELDA, CELDA, cc);
             else
-                ingresarSubcomp(matriz, 2, x, y, CELDA, CELDA, cc);
+                ingresarSubMatriz(matriz, 0, x, y, CELDA, CELDA, cc);
 
             if(tablero[i][j] == 1)
-                ingresarSubcomp(matriz, 5, x+11, y+8, 17, 24, cc);
+                ingresarSubMatriz(matriz, 5, x+11, y+8, 17, 24, cc);
 
             y += CELDA;
             cc++;
@@ -214,7 +217,7 @@ void generarImagen(int **tablero, int *c){
                     r = 15; g = 80; b = 15;
                 break;
                 case 4: //Amarrillo
-                    r = 255; g = 255; b = 0;
+                    r = 188; g = 156; b = 34;
                 break;
             }
             imagen[3 * (i * TAM + j)] = r;
@@ -243,7 +246,7 @@ void imprimirTablero(int**tablero, int *c){
 }
 
 //Introduce los valores correspondientes de la celda a la matriz imagen
-void ingresarSubcomp(int **matriz, int valor, int x, int y, int tamx, int tamy, int cc){
+void ingresarSubMatriz(int **matriz, int valor, int x, int y, int tamx, int tamy, int cc){
     int i = 0, j = 0, a = 0, b = 0;
     if(valor != 5){ //Solo celda
         for(a = x, i = 0; i < tamx; i++, a++){
@@ -256,9 +259,9 @@ void ingresarSubcomp(int **matriz, int valor, int x, int y, int tamx, int tamy, 
             for(b = y, j = 0; j < tamy; j++, b++){
                 if(pxQ[i][j] == 0){//Pone el fondo que debe de ir
                     if(cc % 2 == 0){
-                        matriz[a][b] = 3;
+                        matriz[a][b] = 1;
                     }else{
-                        matriz[a][b] = 2;
+                        matriz[a][b] = 0;
                     }
                 }else{//Pone los colores del PixelArt de la Reina
                     matriz[a][b] = pxQ[i][j]-1;
@@ -294,6 +297,7 @@ void nReinas(int **tablero, int columna, int fila, int q, int *acciones, int *c)
         if(esValida(tablero, fila, columna)){//Pone una reina
             tablero[fila][columna] = 1;
             if(q == N-1){//Si ya hay N en el tablero
+                printf("eo");
                 (*c)++;
                 imprimirTablero(tablero, c);
                 generarMatriz(matrizImagen, tablero);
