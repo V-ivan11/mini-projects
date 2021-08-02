@@ -196,11 +196,13 @@ void generarImagen(int **tablero, int *c){
 
     int i = 0, j = 0, r = 0, g = 0, b = 0;
     char num[5];
-    char nombreArchivo[50];
+    char filename[50];
     char *formato= ".bmp";
+    char *carpeta= "img/";
     sprintf(num, "%d", *(c));
-    strcpy(nombreArchivo, num);
-    strcat(nombreArchivo, formato);
+    strcpy(filename, carpeta);
+    strcat(filename, num);
+    strcat(filename, formato);
     for(i = 0; i < TAM; i++){
         for(j = 0; j < TAM; j++){
             switch(matrizImagen[i][j]){
@@ -226,7 +228,7 @@ void generarImagen(int **tablero, int *c){
         }
     }
 
-    escribirImagen(nombreArchivo, imagen);
+    escribirImagen(filename, imagen);
 }
 
 void imprimirTablero(int**tablero, int *c){
